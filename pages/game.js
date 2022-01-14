@@ -108,6 +108,8 @@ export default function Game() {
             mode: 'no-cors'
         })
         let athomeUrlData = await athomeUrlResponse.json()
+        console.log('Page Link response:')
+        console.log(athomeUrlData)
         let athomeUrl = ''
         let hash = ''
         let pageid = ''
