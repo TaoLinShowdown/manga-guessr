@@ -104,7 +104,9 @@ export default function Game() {
     }
 
     const getPageLink = async (chapterid) => {
-        let athomeUrlResponse = await fetch(`https://api.mangadex.org/at-home/server/${chapterid}`)
+        let athomeUrlResponse = await fetch(`https://api.mangadex.org/at-home/server/${chapterid}`, {
+            mode: 'no-cors'
+        })
         let athomeUrlData = await athomeUrlResponse.json()
         let athomeUrl = ''
         let hash = ''
