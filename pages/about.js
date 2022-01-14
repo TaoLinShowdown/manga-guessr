@@ -43,7 +43,7 @@ export default function Home() {
                         <br />
                         You can also choose to filter by Mangadex Lists. Doing so will disable filtering by tags. <br />
                         To create a list, go here <a target="_blank" rel="noopener noreferrer" className={styles['link']} href='https://mangadex.org/my/lists'>https://mangadex.org/my/lists</a>.  
-                        Make sure to set the visibility as public! Make sure manga in the list have chapters that are readable on MangaDex. Some manga will redirect to the publisher's website to read there.
+                        Make sure to set the visibility as public! Make sure manga in the list have chapters that are readable on MangaDex. Some manga will redirect to the publisher&quot;s website to read there.
                         When completed, you should have a link that looks like <code>https://mangadex.org/list/37090567-b2d3-45e0-a1fe-5d75da2bd062/manga-guessr</code>.
                         Take the ID (in this case <code>37090567-b2d3-45e0-a1fe-5d75da2bd062</code>) and add it to the lists to filter by.
                     </p>
@@ -51,14 +51,14 @@ export default function Home() {
                 <section>
                     <h3>FAQ</h3>
                     <p>
-                        <b>I'm stuck on the loading screen!</b>
+                        <b>I&quot;m stuck on the loading screen!</b>
                         <br />
-                        Currently I'm hosting the server on a free Heroku instance. If you're the first one to play after a while, the server will take a few seconds to boot up, so just give it a few seconds.
+                        Currently I&quot;m hosting the server on a free Heroku instance. If you&quot;re the first one to play after a while, the server will take a few seconds to boot up, so just give it a few seconds.
                     </p>
                     <p>
-                        <b>I'm getting pages that are scanlation groups!</b>
+                        <b>I&quot;m getting pages that are scanlation groups!</b>
                         <br />
-                        Unfortunately, that's inevitable. I cannot check every single manga and filter out their scanlation pages.
+                        Unfortunately, that&quot;s inevitable. I cannot check every single manga and filter out their scanlation pages.
                     </p>
                 </section>
             </main>
