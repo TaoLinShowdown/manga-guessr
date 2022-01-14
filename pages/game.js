@@ -104,33 +104,20 @@ export default function Game() {
     }
 
     const getPageLink = async (chapterid) => {
-        let athomeUrlResponse = await fetch(`https://api.mangadex.org/at-home/server/${chapterid}`, {
-            mode: 'no-cors'
-        })
+        let athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/${chapterid}`)
         let athomeUrlData = await athomeUrlResponse.json()
-        console.log('Page Link response:')
-        console.log(athomeUrlData)
-        let athomeUrl = ''
-        let hash = ''
-        let pageid = ''
 
         // in case of being ratelimited
-        if (athomeUrlData.result === 'error' && athomeUrlData.errors[0].status === 429) {
-            let retry = athomeUrlResponse.headers.get('retry-after')
-            console.log(`RATE LIMITED WAITING ${retry} SECONDS`)
+        if (athomeUrlData.result === 'error') {
+            let retry = athomeUrlData.retry
+            console.log(`RATE LIMITED WAITING ${retry + 5} SECONDS`)
             await new Promise(resolve => setTimeout(resolve, (retry * 1000) + 5000)) // sleep
-            athomeUrlResponse = await fetch(`https://api.mangadex.org/at-home/server/${chapterid}`)
+            athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/${chapterid}`)
             athomeUrlData = await athomeUrlResponse.json()
-            athomeUrl = athomeUrlData.baseUrl
-            hash = athomeUrlData.chapter.hash
-            pageid = athomeUrlData.chapter.dataSaver[Math.floor(Math.random()*athomeUrlData.chapter.dataSaver.length)]
+            return athomeUrlData.page
         } else {
-            athomeUrl = athomeUrlData.baseUrl
-            hash = athomeUrlData.chapter.hash
-            pageid = athomeUrlData.chapter.dataSaver[Math.floor(Math.random()*athomeUrlData.chapter.dataSaver.length)]
+            return athomeUrlData.page
         }
-
-        return `${athomeUrl}/data-saver/${hash}/${pageid}`
     }
 
     const startGame = () => {
