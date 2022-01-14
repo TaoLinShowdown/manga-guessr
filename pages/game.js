@@ -104,7 +104,7 @@ export default function Game() {
     }
 
     const getPageLink = async (chapterid) => {
-        let athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/${chapterid}`)
+        let athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/pagelink?chapterId=${chapterid}`)
         let athomeUrlData = await athomeUrlResponse.json()
 
         // in case of being ratelimited
@@ -112,7 +112,7 @@ export default function Game() {
             let retry = athomeUrlData.retry
             console.log(`RATE LIMITED WAITING ${retry + 5} SECONDS`)
             await new Promise(resolve => setTimeout(resolve, (retry * 1000) + 5000)) // sleep
-            athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/${chapterid}`)
+            athomeUrlResponse = await fetch(`https://manga-quiz-server.herokuapp.com/pagelink?chapterId=${chapterid}`)
             athomeUrlData = await athomeUrlResponse.json()
             return athomeUrlData.page
         } else {
