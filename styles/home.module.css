@@ -1,0 +1,23 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8%;
+}
+
+.main > * {
+    margin-bottom: 8px;
+}
+
+.button {
+    cursor: pointer;
+    padding: 5px 7px;
+    background-color: #2c2c2c;
+    border-radius: 0.25rem;
+    transition: all .1s ease-out;
+}
+
+.button:hover {
+    background-color: rgb(255, 103, 64);
+}
