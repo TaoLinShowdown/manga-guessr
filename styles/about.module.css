@@ -58,12 +58,32 @@
 
 @media only screen and (max-width: 1900px) {
     .main {
-        width: 66%;
+        width: 70%;
     }
 }
 
 @media only screen and (max-width: 1300px) {
     .main {
-        width: 80%;
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .main {
+        width: 100%;
+    }
+
+    .main > section {
+        width: 70%;
+    }
+}
+
+@media only screen and (max-width: 540px) {
+    .main {
+        width: 100%;
+    }
+
+    .main > section {
+        width: 90%;
     }
 }
