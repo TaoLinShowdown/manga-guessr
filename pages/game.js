@@ -322,7 +322,7 @@ export default function Game() {
                                     <h3>Round Skipped</h3>
                                 } 
                                 <div className={styles['manga-page-modal-title']}>{mangas[currentRound].titles[0]}</div>
-                                <div className={styles['icon-holder']}><a href={`https://mangadex.org/chapter/${mangas[currentRound].chapterid}`} target="_blank" rel="noopener noreferrer">
+                                <div className={styles['icon-holder']}><a href={`https://mangadex.org/title/${mangas[currentRound].ref}`} target="_blank" rel="noopener noreferrer">
                                     Read here 
                                     <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
                                 </a></div>
@@ -390,7 +390,7 @@ export default function Game() {
                         {mangas && mangas.map(m => 
                             <div key={mangas.indexOf(m)} className={styles['preview']}>
                                 <img src={pageLinks[mangas.indexOf(m)]}></img>
-                                <a href={`https://mangadex.org/chapter/${m.chapterid}`} target="_blank" rel="noopener noreferrer">{m.titles[0]} <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg></a>
+                                <a href={`https://mangadex.org/title/${m.ref}`} target="_blank" rel="noopener noreferrer">{m.titles[0]} <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg></a>
                             </div>
                         )}
                     </div>
