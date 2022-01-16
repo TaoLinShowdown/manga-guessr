@@ -110,6 +110,38 @@
   transform: translateX(26px);
 }
 
+.multichoice label {
+  display: flex;
+}
+
+.multichoice input[type="checkbox"] {
+  appearance: none;
+  background-color: #4f4f4f;
+  margin: 0 0 0 0.5rem;
+  font: inherit;
+  color: currentColor;
+  width: 1.38em;
+  height: 1.38em;
+  border: none;
+  border-radius: 0.25em;
+  display: grid;
+  place-content: center;
+}
+
+.multichoice input[type="checkbox"]::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transition: 80ms transform ease-in-out;
+  box-shadow: inset 1em 1em #fff;
+}
+
+.multichoice input[type="checkbox"]:checked::before {
+  transform: scale(1.2);
+}
+
 .tagslist-tags > *, .tagslist-deselected, .game-overlay button, .results button {
   color: white;
   display: inline-block;
@@ -206,10 +238,10 @@
   font-size: 1rem;
   border: none;
   /* padding: 0 0.3rem; */
-  margin: 0 0.2rem;
+  margin: 0 0.5rem;
   background-color: #4f4f4f;
   color: white;
-  border-radius: 1px;
+  border-radius: 0.25rem;
   width: 50px;
   text-align: right;
   outline: rgb(255, 103, 64, 0) 1px solid;
@@ -227,18 +259,6 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-}
-
-@media only screen and (max-width: 1900px) {
-  .game {
-    width: 60%;
-  }
-}
-
-@media only screen and (max-width: 1400px) {
-  .game {
-    width: 80%;
-  }
 }
 
 .manga-page-div {
@@ -486,13 +506,42 @@
   top: 0px;
 }
 
+@media only screen and (max-width: 1900px) {
+  .game {
+    width: 60%;
+  }
+  .game-overlay {
+    width: 440px;
+  }
+}
+
+@media only screen and (max-width: 1700px) {
+  .game {
+    width: 70%;
+  }
+  .game-overlay {
+    width: 400px;
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  .game {
+    width: 80%;
+  }
+  .game-overlay {
+    width: 350px;
+  }
+}
+
 @media only screen and (max-width: 912px) {
   .game {
     flex-direction: column-reverse;
+    width: 95%;
   }
 
   .game-overlay {
     width: 100%;
+    font-size: 0.8rem;
   }
 
   .manga-page-div {

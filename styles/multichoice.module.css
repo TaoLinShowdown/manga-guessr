@@ -1,0 +1,38 @@
+.choices {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.choices > div {
+    background-color: #4f4f4f;
+    padding: 3px 7px;
+    width: 95%;
+    text-align: center;
+    border-bottom: #585858 solid 1px;
+    transition: all .1s ease-out;
+    text-overflow: ellipsis;
+    height: 2rem;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.choices > div:hover {
+    background-color: rgb(255, 103, 64);
+    cursor: pointer;
+}
+
+.choices > div:first-child {
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.choices > div:last-child {
+    border-radius: 0 0 0.25rem 0.25rem;
+    border-bottom: none !important;
+}
+
+.chosen {
+    background-color: rgb(255, 103, 64) !important;
+}

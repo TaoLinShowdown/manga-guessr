@@ -4,8 +4,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import styles from '../styles/game.module.css'
 import AutoSearchBar from '../components/AutoSearchBar'
+import MultipleChoice from '../components/MultipleChoice'
 
 export default function Game() {
+    let [ game, setGame ] = useState(<></>)
     let [ mangas, setMangas ] = useState([])
     let [ titles, setTitles ] = useState([])
     let [ mdListInput, setMDListInput ] = useState('')
@@ -18,7 +20,8 @@ export default function Game() {
         tags: [],
         lists: [],
         totalRounds: 10,
-        tagsOrLists: false // false:tags, true:lists
+        tagsOrLists: false, // false:tags, true:lists
+        enableMultiChoice: true
     })
     const tagsList = ['Shounen',       'Shoujo',        'Seinen',
                       'Josei',         'Action',        'Adventure',
@@ -47,6 +50,7 @@ export default function Game() {
     }
 
     const handleTagListSelect = (tag) => {
+        setTitles([]) // This is so when we start the game, we generate a new set of titles that better fit the tags
         if (gameSettings.tags.includes(tag)) {
             setGameSettings({
                 ...gameSettings,
@@ -96,10 +100,22 @@ export default function Game() {
     }
 
     const getTitles = async () => {
-        if (titles.length === 0) {
-            let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles')
-            let titlesList = await titlesReponse.json()
-            setTitles(titlesList)
+        if (titles.length === 0) { // in case of resetting a game, don't want to recall this endpoint
+            if (gameSettings.enableMultiChoice && !gameSettings.tagsOrLists) { // however, if the tags are changed, we do want to get the titles again
+                let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        tags: gameSettings.tags
+                    })
+                })
+                let titlesList = await titlesReponse.json()
+                setTitles(titlesList)       
+            } else {
+                let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles')
+                let titlesList = await titlesReponse.json()
+                setTitles(titlesList)  
+            }
         }
     }
 
@@ -184,187 +200,6 @@ export default function Game() {
         }
     }, [currentRound])
 
-    let game = <></>
-    if (gameState === 0) { // setup
-        game = (
-            <div className={styles['game-setup']}>
-                <Link href='/'>
-                    <a>
-                        <Image 
-                            src='/mangaquizlogo_light.svg' 
-                            alt='Logo goes here'
-                            width={150}
-                            height={150}
-                        />
-                    </a>
-                </Link>
-                <section>
-                    <h3>
-                        Game Settings
-                    </h3>
-                    <p>
-                        Number of rounds:
-                        <select defaultValue={gameSettings.totalRounds} className={styles['total-rounds']} onChange={setTotalRounds}>
-                            {[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(n => 
-                                <option key={n} value={n}>
-                                    {n}
-                                </option>
-                            )}
-                        </select>
-                    </p>
-                    <div className={styles['filter-header']}>
-                        <div>
-                            <span className={!gameSettings.tagsOrLists ? styles['filter-enabled'] : styles['filter-disabled']}>Tags</span>
-                            <label className={styles['filter-switch']}>
-                                <input type='checkbox' checked={gameSettings.tagsOrLists} onChange={() => setGameSettings({ ...gameSettings, tagsOrLists: !gameSettings.tagsOrLists })} />
-                                <span className={styles['filter-slider']}></span>
-                            </label>
-                            <span className={gameSettings.tagsOrLists ? styles['filter-enabled'] : styles['filter-disabled']}>Lists</span>
-                        </div>
-                        <button onClick={() => setGameSettings({ ...gameSettings, tags: [], lists: [] })}>Clear</button>
-                    </div>
-                    {!gameSettings.tagsOrLists ?
-                        <div className={styles['tagslist']}>
-                            <div className={styles['tagslist-tags']}>
-                                {tagsList.map(tag => 
-                                    <div 
-                                        key={tag}
-                                        className={gameSettings.tags.includes(tag) ? styles['tagslist-selected'] : styles['tagslist-deselected']}
-                                        onClick={e => handleTagListSelect(tag)}>
-                                        {tag}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    :
-                        <div className={styles['tagslist']}>
-                            <div className={styles['add-list']}>
-                                <input placeholder='MangaDex List ID' type='text' value={mdListInput} onChange={(e) => setMDListInput(e.target.value)}/>
-                                <button onClick={(e) => {if (mdListInput.trim() !== '') setGameSettings({ ...gameSettings, lists: gameSettings.lists.concat([mdListInput]) }); 
-                                                         setMDListInput('')}}>
-                                    <svg data-v-20f285ec="" data-v-6b3fd699="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path data-v-20f285ec="" d="M12 5v14M5 12h14"></path></svg>
-                                </button>
-                            </div>
-                            <div className={styles['lists']}>
-                                {gameSettings.lists.map((l, index) => 
-                                    <div key={index}>
-                                        <span>{l}</span>
-                                        <span onClick={() => {  let temp = gameSettings.lists; 
-                                                                temp.splice(index, 1); 
-                                                                setGameSettings({ ...gameSettings, lists: temp })}}>
-                                            <svg data-v-20f285ec="" data-v-6b3fd699="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path data-v-20f285ec="" d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    }
-                    <button disabled={gameSettings.tagsOrLists && gameSettings.lists.length === 0} onClick={startGame}>Start</button>
-                </section>
-            </div>
-        )
-    } else if (gameState === 1) { // loading
-        game = (
-            <div className={styles['game-setup']}>
-                <div className={styles['logo']}>
-                    <Image 
-                        src='/mangaquizlogo_light.svg' 
-                        alt='Logo goes here'
-                        width={150}
-                        height={150}
-                    />
-                </div>
-                <div className={styles['loading-bar']}>
-                    <h3>Loading...</h3>
-                </div>
-            </div>
-        )
-    } else if (gameState === 2 || gameState === 3) { // game started
-        game = (
-            <div className={styles.game}>
-                <div className={styles['manga-page-div']}>
-                    {pageLinks[currentRound] === undefined ? 
-                        <div style={{'color': 'white'}}>Loading...</div>
-                    :
-                        <img className={gameState === 3 ? styles['manga-page-img-hidden'] : styles['manga-page-img']} alt="Couldn't load manga page" src={pageLinks[currentRound]} />
-                    }
-                    {gameState === 3 && pageLinks[currentRound] !== undefined ? 
-                        <div className={styles['manga-page-modal']}>
-                            {guess !== '' ?
-                                <h3>You were {mangas[currentRound].titles.includes(guess) ? "correct!" : "wrong!"}</h3>
-                            :
-                                <h3>Round Skipped</h3>
-                            } 
-                            <div className={styles['manga-page-modal-title']}>{mangas[currentRound].titles[0]}</div>
-                            <div className={styles['icon-holder']}><a href={`https://mangadex.org/chapter/${mangas[currentRound].chapterid}`} target="_blank" rel="noopener noreferrer">
-                                Read here 
-                                <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
-                            </a></div>
-                        </div>
-                    :
-                        <div style={{"display": "none"}}>You should not be seeing this</div>
-                    }
-                </div>
-                <div className={styles['game-overlay']}>
-                    <h3>
-                        <div className={styles['logo']}>
-                            <Image 
-                                src='/mangaquizlogo_light.svg' 
-                                alt='Logo goes here'
-                                layout='fixed'
-                                width={35}
-                                height={35}
-                            />
-                            <span>MangaGuessr</span>
-                        </div>
-                        <div className={styles['roundscore']}>
-                            <span>
-                                <span>Round</span> 
-                                <span>{currentRound + 1} / {gameSettings.totalRounds}</span>
-                            </span>
-                            <span>
-                                <span>Score</span> 
-                                <span className={styles['score']}>{score}</span>
-                            </span>
-                        </div>
-                    </h3>
-                    <AutoSearchBar 
-                        titles={titles}
-                        submit={onSubmit}
-                        disabled={gameState === 3}
-                    />
-                </div>
-            </div>
-        )
-    } else { // finished
-        game = (
-            <div className={styles['end-screen']}>
-                <Link href='/'>
-                    <a>
-                        <Image 
-                            src='/mangaquizlogo_light.svg' 
-                            alt='Logo goes here'
-                            width={150}
-                            height={150}
-                        />
-                    </a>
-                </Link>
-                <div className={styles['results']}>
-                    <h3>You got <span className={styles['score']}>{score}</span> out of {gameSettings.totalRounds} correct!</h3>
-                    <button onClick={resetGame}>Play again?</button>
-                </div>
-                <div className={styles['previews']}>
-                    {mangas && mangas.map(m => 
-                        <div key={mangas.indexOf(m)} className={styles['preview']}>
-                            <img src={pageLinks[mangas.indexOf(m)]}></img>
-                            <a href={`https://mangadex.org/chapter/${m.chapterid}`} target="_blank" rel="noopener noreferrer">{m.titles[0]} <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg></a>
-                        </div>
-                    )}
-                </div>
-            </div> 
-        )
-    }
-
     return (
         <div>
             <Head>
@@ -375,7 +210,192 @@ export default function Game() {
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" />
             </Head>
-            {game}
+            {gameState === 0 ? 
+                <div className={styles['game-setup']}>
+                    <Link href='/'>
+                        <a>
+                            <Image 
+                                src='/mangaquizlogo_light.svg' 
+                                alt='Logo goes here'
+                                width={150}
+                                height={150}
+                            />
+                        </a>
+                    </Link>
+                    <section>
+                        <h3>
+                            Game Settings
+                        </h3>
+                        <p>
+                            Number of Rounds
+                            <select defaultValue={gameSettings.totalRounds} className={styles['total-rounds']} onChange={setTotalRounds}>
+                                {[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(n => 
+                                    <option key={n} value={n}>
+                                        {n}
+                                    </option>
+                                )}
+                            </select>
+                        </p>
+                        <p className={styles['multichoice']}>
+                            <label className={gameSettings.enableMultiChoice ? styles['filter-enabled'] : styles['filter-disabled']}>
+                                Multiple Choice
+                                <input type='checkbox' checked={gameSettings.enableMultiChoice} onChange={() => setGameSettings({ ...gameSettings, enableMultiChoice: !gameSettings.enableMultiChoice })} />
+                            </label>
+                        </p>
+                        <div className={styles['filter-header']}>
+                            <div>
+                                <span className={!gameSettings.tagsOrLists ? styles['filter-enabled'] : styles['filter-disabled']}>Tags</span>
+                                <label className={styles['filter-switch']}>
+                                    <input type='checkbox' checked={gameSettings.tagsOrLists} onChange={() => setGameSettings({ ...gameSettings, tagsOrLists: !gameSettings.tagsOrLists })} />
+                                    <span className={styles['filter-slider']}></span>
+                                </label>
+                                <span className={gameSettings.tagsOrLists ? styles['filter-enabled'] : styles['filter-disabled']}>Lists</span>
+                            </div>
+                            <button onClick={() => {setGameSettings({ ...gameSettings, tags: [], lists: [] }); setTitles([])}}>Clear</button>
+                        </div>
+                        {!gameSettings.tagsOrLists ?
+                            <div className={styles['tagslist']}>
+                                <div className={styles['tagslist-tags']}>
+                                    {tagsList.map(tag => 
+                                        <div 
+                                            key={tag}
+                                            className={gameSettings.tags.includes(tag) ? styles['tagslist-selected'] : styles['tagslist-deselected']}
+                                            onClick={e => handleTagListSelect(tag)}>
+                                            {tag}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        :
+                            <div className={styles['tagslist']}>
+                                <div className={styles['add-list']}>
+                                    <input placeholder='MangaDex List ID' type='text' value={mdListInput} onChange={(e) => setMDListInput(e.target.value)}/>
+                                    <button onClick={(e) => {if (mdListInput.trim() !== '') setGameSettings({ ...gameSettings, lists: gameSettings.lists.concat([mdListInput]) }); 
+                                                            setMDListInput('')}}>
+                                        <svg data-v-20f285ec="" data-v-6b3fd699="" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path data-v-20f285ec="" d="M12 5v14M5 12h14"></path></svg>
+                                    </button>
+                                </div>
+                                <div className={styles['lists']}>
+                                    {gameSettings.lists.map((l, index) => 
+                                        <div key={index}>
+                                            <span>{l}</span>
+                                            <span onClick={() => {  let temp = gameSettings.lists; 
+                                                                    temp.splice(index, 1); 
+                                                                    setGameSettings({ ...gameSettings, lists: temp })}}>
+                                                <svg data-v-20f285ec="" data-v-6b3fd699="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path data-v-20f285ec="" d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        }
+                        <button disabled={gameSettings.tagsOrLists && gameSettings.lists.length === 0} onClick={startGame}>Start</button>
+                    </section>
+                </div>
+            : gameState === 1 ?
+                <div className={styles['game-setup']}>
+                    <div className={styles['logo']}>
+                        <Image 
+                            src='/mangaquizlogo_light.svg' 
+                            alt='Logo goes here'
+                            width={150}
+                            height={150}
+                        />
+                    </div>
+                    <div className={styles['loading-bar']}>
+                        <h3>Loading...</h3>
+                    </div>
+                </div>
+            : gameState === 2 || gameState === 3 ?
+                <div className={styles.game}>
+                    <div className={styles['manga-page-div']}>
+                        {pageLinks[currentRound] === undefined ? 
+                            <div style={{'color': 'white'}}>Loading...</div>
+                        :
+                            <img className={gameState === 3 ? styles['manga-page-img-hidden'] : styles['manga-page-img']} alt="Couldn't load manga page" src={pageLinks[currentRound]} />
+                        }
+                        {gameState === 3 && pageLinks[currentRound] !== undefined ? 
+                            <div className={styles['manga-page-modal']}>
+                                {guess !== '' ?
+                                    <h3>You were {mangas[currentRound].titles.includes(guess) ? "correct!" : "wrong!"}</h3>
+                                :
+                                    <h3>Round Skipped</h3>
+                                } 
+                                <div className={styles['manga-page-modal-title']}>{mangas[currentRound].titles[0]}</div>
+                                <div className={styles['icon-holder']}><a href={`https://mangadex.org/chapter/${mangas[currentRound].chapterid}`} target="_blank" rel="noopener noreferrer">
+                                    Read here 
+                                    <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                                </a></div>
+                            </div>
+                        :
+                            <div style={{"display": "none"}}>You should not be seeing this</div>
+                        }
+                    </div>
+                    <div className={styles['game-overlay']}>
+                        <h3>
+                            <div className={styles['logo']}>
+                                <Image 
+                                    src='/mangaquizlogo_light.svg' 
+                                    alt='Logo goes here'
+                                    layout='fixed'
+                                    width={35}
+                                    height={35}
+                                />
+                                <span>MangaGuessr</span>
+                            </div>
+                            <div className={styles['roundscore']}>
+                                <span>
+                                    <span>Round</span> 
+                                    <span>{currentRound + 1} / {gameSettings.totalRounds}</span>
+                                </span>
+                                <span>
+                                    <span>Score</span> 
+                                    <span className={styles['score']}>{score}</span>
+                                </span>
+                            </div>
+                        </h3>
+                        {currentRound < gameSettings.totalRounds && gameSettings.enableMultiChoice ?
+                            <MultipleChoice
+                                titles={titles}
+                                correctTitle={mangas[currentRound].titles[0]}
+                                submit={onSubmit}
+                                disabled={gameState === 3}
+                            />
+                        :
+                            <AutoSearchBar 
+                                titles={titles}
+                                submit={onSubmit}
+                                disabled={gameState === 3}
+                            />
+                        }
+                    </div>
+                </div>
+            : 
+                <div className={styles['end-screen']}>
+                    <Link href='/'>
+                        <a>
+                            <Image 
+                                src='/mangaquizlogo_light.svg' 
+                                alt='Logo goes here'
+                                width={150}
+                                height={150}
+                            />
+                        </a>
+                    </Link>
+                    <div className={styles['results']}>
+                        <h3>You got <span className={styles['score']}>{score}</span> out of {gameSettings.totalRounds} correct!</h3>
+                        <button onClick={resetGame}>Play again?</button>
+                    </div>
+                    <div className={styles['previews']}>
+                        {mangas && mangas.map(m => 
+                            <div key={mangas.indexOf(m)} className={styles['preview']}>
+                                <img src={pageLinks[mangas.indexOf(m)]}></img>
+                                <a href={`https://mangadex.org/chapter/${m.chapterid}`} target="_blank" rel="noopener noreferrer">{m.titles[0]} <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg></a>
+                            </div>
+                        )}
+                    </div>
+                </div> 
+            }
         </div>
     )
 }
