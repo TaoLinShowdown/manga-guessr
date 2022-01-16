@@ -10,13 +10,13 @@
     background-color: #4f4f4f;
     padding: 3px 7px;
     width: 95%;
-    text-align: center;
     border-bottom: #585858 solid 1px;
-    transition: all .1s ease-out;
+    text-align: center;
     text-overflow: ellipsis;
-    height: 2rem;
+    line-height: 1.5rem;
     overflow: hidden;
     white-space: nowrap;
+    transition: all .1s ease-out;
 }
 
 .choices > div:hover {

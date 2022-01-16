@@ -25,10 +25,10 @@ export default function Game() {
     })
     const tagsList = ['Shounen',       'Shoujo',        'Seinen',
                       'Josei',         'Action',        'Adventure',
-                      'Aliens',        'Animals',       'Comedy',
+                      'Aliens',        'Animals',       'Boys\' Love',       'Comedy',
                       'Cooking',       'Crime',         'Crossdressing',
                       'Delinquents',   'Demons',        'Drama',
-                      'Fantasy',       'Genderswap',    'Ghosts',
+                      'Fantasy',       'Genderswap',    'Ghosts',            'Girls\' Love',
                       'Gyaru',         'Harem',         'Historical',
                       'Horror',        'Isekai',        'Mafia',
                       'Magic',         'Magical Girls', 'Martial Arts',
