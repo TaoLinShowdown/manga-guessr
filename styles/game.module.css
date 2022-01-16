@@ -254,16 +254,16 @@
 
 .game {
   height: 100vh;
-  width: 60%;
+  width: 100%;
   margin: auto;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
 }
 
 .manga-page-div {
   height: 100%;
-  width: 60%;
+  width: 35%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -507,29 +507,32 @@
 }
 
 @media only screen and (max-width: 1900px) {
-  .game {
-    width: 60%;
-  }
   .game-overlay {
-    width: 440px;
+    width: 450px;
+  }
+  .manga-page-div {
+    width: 40%;
   }
 }
 
 @media only screen and (max-width: 1700px) {
-  .game {
-    width: 70%;
-  }
   .game-overlay {
     width: 400px;
+  }
+  .manga-page-div {
+    width: 45%;
   }
 }
 
 @media only screen and (max-width: 1400px) {
   .game {
-    width: 80%;
+    width: 100%;
   }
   .game-overlay {
     width: 350px;
+  }
+  .manga-page-div {
+    width: 50%;
   }
 }
 
