@@ -331,16 +331,25 @@
   transform: translateY(-1px);
 }
 
+.game-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 480px;
+  margin: 20px;
+  height: 100%;
+}
+
 .game-overlay {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 8px 0;
-  width: 480px;
+  width: 100%;
   background-color: #2c2c2c;
   border-radius: 4px;
-  margin: 20px;
 }
 
 .game-overlay > *:nth-child(2) {
@@ -507,7 +516,7 @@
 }
 
 @media only screen and (max-width: 1900px) {
-  .game-overlay {
+  .game-side {
     width: 450px;
   }
   .manga-page-div {
@@ -516,7 +525,7 @@
 }
 
 @media only screen and (max-width: 1700px) {
-  .game-overlay {
+  .game-side {
     width: 400px;
   }
   .manga-page-div {
@@ -528,7 +537,7 @@
   .game {
     width: 100%;
   }
-  .game-overlay {
+  .game-side {
     width: 350px;
   }
   .manga-page-div {
@@ -539,16 +548,21 @@
 @media only screen and (max-width: 912px) {
   .game {
     flex-direction: column-reverse;
-    width: 95%;
+    width: 98%;
   }
 
-  .game-overlay {
+  .game-side {
     width: 100%;
     font-size: 0.8rem;
+    height: 280px;
   }
 
   .manga-page-div {
     width: 100%;
     overflow: auto;
+  }
+
+  .history {
+    display: none;
   }
 }

@@ -101,16 +101,28 @@ export default function Game() {
 
     const getTitles = async () => {
         if (titles.length === 0) { // in case of resetting a game, don't want to recall this endpoint
-            if (gameSettings.enableMultiChoice && !gameSettings.tagsOrLists) { // however, if the tags are changed, we do want to get the titles again
-                let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        tags: gameSettings.tags
+            if (gameSettings.enableMultiChoice) { // however, if the tags are changed, we do want to get the titles again
+                if (!gameSettings.tagsOrLists) {
+                    let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles/tags', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            tags: gameSettings.tags
+                        })
                     })
-                })
-                let titlesList = await titlesReponse.json()
-                setTitles(titlesList)       
+                    let titlesList = await titlesReponse.json()
+                    setTitles(titlesList)       
+                } else {
+                    let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles/lists', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            lists: gameSettings.lists
+                        })
+                    })
+                    let titlesList = await titlesReponse.json()
+                    setTitles(titlesList)       
+                }
             } else {
                 let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles')
                 let titlesList = await titlesReponse.json()
@@ -331,43 +343,50 @@ export default function Game() {
                             <div style={{"display": "none"}}>You should not be seeing this</div>
                         }
                     </div>
-                    <div className={styles['game-overlay']}>
-                        <h3>
-                            <div className={styles['logo']}>
-                                <Image 
-                                    src='/mangaquizlogo_light.svg' 
-                                    alt='Logo goes here'
-                                    layout='fixed'
-                                    width={35}
-                                    height={35}
+                    <div className={styles['game-side']}>
+                        <div className={styles['game-overlay']}>
+                            <h3>
+                                <div className={styles['logo']}>
+                                    <Image 
+                                        src='/mangaquizlogo_light.svg' 
+                                        alt='Logo goes here'
+                                        layout='fixed'
+                                        width={35}
+                                        height={35}
+                                    />
+                                    <span>MangaGuessr</span>
+                                </div>
+                                <div className={styles['roundscore']}>
+                                    <span>
+                                        <span>Round</span> 
+                                        <span>{currentRound + 1} / {gameSettings.totalRounds}</span>
+                                    </span>
+                                    <span>
+                                        <span>Score</span> 
+                                        <span className={styles['score']}>{score}</span>
+                                    </span>
+                                </div>
+                            </h3>
+                            {currentRound < gameSettings.totalRounds && gameSettings.enableMultiChoice ?
+                                <MultipleChoice
+                                    titles={titles}
+                                    correctTitle={mangas[currentRound].titles[0]}
+                                    submit={onSubmit}
+                                    disabled={gameState === 3}
                                 />
-                                <span>MangaGuessr</span>
-                            </div>
-                            <div className={styles['roundscore']}>
-                                <span>
-                                    <span>Round</span> 
-                                    <span>{currentRound + 1} / {gameSettings.totalRounds}</span>
-                                </span>
-                                <span>
-                                    <span>Score</span> 
-                                    <span className={styles['score']}>{score}</span>
-                                </span>
-                            </div>
-                        </h3>
-                        {currentRound < gameSettings.totalRounds && gameSettings.enableMultiChoice ?
-                            <MultipleChoice
-                                titles={titles}
-                                correctTitle={mangas[currentRound].titles[0]}
-                                submit={onSubmit}
-                                disabled={gameState === 3}
-                            />
-                        :
-                            <AutoSearchBar 
-                                titles={titles}
-                                submit={onSubmit}
-                                disabled={gameState === 3}
-                            />
-                        }
+                            :
+                                <AutoSearchBar 
+                                    titles={titles}
+                                    submit={onSubmit}
+                                    disabled={gameState === 3}
+                                />
+                            }
+                        </div>
+                        <div className={styles['history']}>
+                            {mangas.filter((m, index) => index < currentRound).map(m =>
+                                <div>{m.titles[0]}</div>
+                            )}
+                        </div>
                     </div>
                 </div>
             : 
