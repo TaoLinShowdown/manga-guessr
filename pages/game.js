@@ -382,11 +382,11 @@ export default function Game() {
                                 />
                             }
                         </div>
-                        <div className={styles['history']}>
+                        {/* <div className={styles['history']}>
                             {mangas.filter((m, index) => index < currentRound).map(m =>
                                 <div>{m.titles[0]}</div>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             : 
