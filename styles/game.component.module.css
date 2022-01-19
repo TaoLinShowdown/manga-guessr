@@ -229,6 +229,7 @@
     width: 32.4%;
     margin: -5px 1px;
     border-radius: 0;
+    background-color: black;
 }
 
 .history-previews .preview a {
@@ -240,7 +241,15 @@
     width: 0.8rem;
     height: 0.8rem;
     color: white;
-    transform: translateY(0px);
+    transform: translateY(1px);
+}
+  
+.history-previews .preview img {
+    opacity: 0.5;
+}
+
+.history-previews .preview:nth-child(-n+3) img:hover + a, .history-previews:nth-child(-n+3) .preview a:hover {
+    top: 5px; 
 }
 
 .end-screen {

@@ -138,6 +138,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
                         <div className={styles['history-previews']}>
                             {mangas.filter((m, index) => index < currentRound).map((m, index, mangas) =>
                                 <PreviewCard
+                                    key={index}
                                     mangaRef={mangas[mangas.length - 1 - index].ref}
                                     title={`${mangas.length - index}. ${mangas[mangas.length - 1 - index].titles[0]}`}
                                     pageLink={pageLinks[mangas.length - index - 1]}
@@ -168,6 +169,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
                 <div className={styles['previews']}>
                     {mangas && mangas.map((m, index) => 
                         <PreviewCard 
+                            key={index}
                             mangaRef={m.ref}
                             title={m.titles[0]}
                             pageLink={pageLinks[index]}
