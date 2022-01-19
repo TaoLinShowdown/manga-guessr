@@ -36,7 +36,7 @@ export default function MultipleChoice({ titles, correctTitle, submit, disabled 
         let temp = []
         while (temp.length < 4) {
             let rand = titles[getRandomInt(0, titles.length)]
-            if (!temp.includes(rand)) {
+            if (!temp.includes(rand) && rand != correctTitle) {
                 temp.push(rand)
             }
         }

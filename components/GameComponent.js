@@ -7,7 +7,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import styles from '../styles/gamecomponent.module.css'
+import styles from '../styles/game.component.module.css'
 import Image from 'next/image'
 import Link from 'next/link'
 import AutoSearchBar from '../components/AutoSearchBar'
