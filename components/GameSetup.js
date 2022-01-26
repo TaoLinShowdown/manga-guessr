@@ -83,7 +83,7 @@ export default function GameSetup({ defaultGameSettings, startGame }) {
                 <p>
                     Number of Rounds
                     <select defaultValue={totalRounds} className={styles['total-rounds']} onChange={(e) => setTotalRounds(e.target.value)}>
-                        {[5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(n => 
+                        {[5, 10, 15, 20, 25].map(n => 
                             <option key={n} value={n}>
                                 {n}
                             </option>

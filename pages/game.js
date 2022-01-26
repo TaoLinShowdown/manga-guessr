@@ -19,24 +19,18 @@ export default function Game() {
     
     const getMangas = async (gameSettings) => {
         if (!gameSettings.tagsOrLists) {
-            let mangasResponse = await fetch('https://manga-quiz-server.herokuapp.com/manga/tags', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    totalRounds: gameSettings.totalRounds,
-                    tags: gameSettings.tags
-                })
+            let tagsParams = '&tags[]=' + gameSettings.tags.join('&tags[]=')
+            let mangasResponse = await fetch(`https://manga-guessr-server.herokuapp.com/manga/tags?totalRounds=${gameSettings.totalRounds}${tagsParams}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
             })
             let mangasData = await mangasResponse.json()
             return mangasData.mangas
         } else {
-            let mangasResponse = await fetch('https://manga-quiz-server.herokuapp.com/manga/lists', {
-                method: 'POST',
+            let listsParams = '&lists[]=' + gameSettings.lists.join('&lists[]=')
+            let mangasResponse = await fetch(`https://manga-guessr-server.herokuapp.com/manga/lists?totalRounds=${gameSettings.totalRounds}${listsParams}`, {
+                method: 'GET',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    totalRounds: gameSettings.totalRounds,
-                    lists: gameSettings.lists
-                })
             })
             let mangasData = await mangasResponse.json()
             if (mangasData.result !== 'ok') {
@@ -49,39 +43,33 @@ export default function Game() {
 
     const getTitles = async (gameSettings) => {
         if (gameSettings.enableMultiChoice) { // however, if the tags are changed, we do want to get the titles again
-            if (!gameSettings.tagsOrLists) { // if using tags, get titles based on tags
-                let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles/tags', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        tags: gameSettings.tags
-                    })
+            if (!gameSettings.tagsOrLists) {  // if using tags, get titles based on tags
+                let tagsParams = '?tags[]=' + gameSettings.tags.join('&tags[]=')
+                let titlesReponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/tags${tagsParams}`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
                 })
                 let titlesList = await titlesReponse.json()
                 return titlesList
             } else { // if using lists, get titles based on manga in those lists
-                let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles/lists', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        lists: gameSettings.lists
-                    })
+                let listsParams = '?lists[]=' + gameSettings.lists.join('&lists[]=')
+                let titlesReponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/lists${listsParams}`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
                 })
                 let titlesList = await titlesReponse.json()
                 return titlesList
             }
         } else { // if using autocomplete, just get all titles
-            let titlesReponse = await fetch('https://manga-quiz-server.herokuapp.com/titles')
+            let titlesReponse = await fetch('https://manga-guessr-server.herokuapp.com/titles')
             let titlesList = await titlesReponse.json()
 
             // if using lists and autocomplete, add the titles of mdlists to all titles
             if (gameSettings.tagsOrLists) {
-                let mdlistTitlesResponse = await fetch('https://manga-quiz-server.herokuapp.com/titles/lists', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        lists: gameSettings.lists
-                    })
+                let listsParams = '?lists[]=' + gameSettings.lists.join('&lists[]=')
+                let mdlistTitlesResponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/lists${listsParams}`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'}
                 })
                 let mdlistTitles = await mdlistTitlesResponse.json()
                 for (let titleToAdd of mdlistTitles) {
