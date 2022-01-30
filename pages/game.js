@@ -4,6 +4,7 @@ import Image from 'next/image'
 import styles from '../styles/game.module.css'
 import GameSetup from '../components/GameSetup'
 import GameComponent from '../components/GameComponent'
+const url = 'https://manga-guessr-server-staging.herokuapp.com'
 
 export default function Game() {
     let [ gameState, setGameState ] = useState(0) // 0:setup, 1:loading, 2:game
@@ -19,8 +20,8 @@ export default function Game() {
     
     const getMangas = async (gameSettings) => {
         if (!gameSettings.tagsOrLists) {
-            let tagsParams = '&tags[]=' + gameSettings.tags.join('&tags[]=')
-            let mangasResponse = await fetch(`https://manga-guessr-server.herokuapp.com/manga/tags?totalRounds=${gameSettings.totalRounds}${tagsParams}`, {
+            let tagsParams = gameSettings.tags.length > 0 ? '&tags[]=' + gameSettings.tags.join('&tags[]=') : ''
+            let mangasResponse = await fetch(`${url}/manga/tags?totalRounds=${gameSettings.totalRounds}${tagsParams}`, {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'}
             })
@@ -28,7 +29,7 @@ export default function Game() {
             return mangasData.mangas
         } else {
             let listsParams = '&lists[]=' + gameSettings.lists.join('&lists[]=')
-            let mangasResponse = await fetch(`https://manga-guessr-server.herokuapp.com/manga/lists?totalRounds=${gameSettings.totalRounds}${listsParams}`, {
+            let mangasResponse = await fetch(`${url}/manga/lists?totalRounds=${gameSettings.totalRounds}${listsParams}`, {
                 method: 'GET',
                 headers: {'Content-Type': 'application/json'},
             })
@@ -44,8 +45,8 @@ export default function Game() {
     const getTitles = async (gameSettings) => {
         if (gameSettings.enableMultiChoice) { // however, if the tags are changed, we do want to get the titles again
             if (!gameSettings.tagsOrLists) {  // if using tags, get titles based on tags
-                let tagsParams = '?tags[]=' + gameSettings.tags.join('&tags[]=')
-                let titlesReponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/tags${tagsParams}`, {
+                let tagsParams = gameSettings.tags.length > 0 ? '?tags[]=' + gameSettings.tags.join('&tags[]=') : ''
+                let titlesReponse = await fetch(`${url}/titles/tags${tagsParams}`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -53,7 +54,7 @@ export default function Game() {
                 return titlesList
             } else { // if using lists, get titles based on manga in those lists
                 let listsParams = '?lists[]=' + gameSettings.lists.join('&lists[]=')
-                let titlesReponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/lists${listsParams}`, {
+                let titlesReponse = await fetch(`${url}/titles/lists${listsParams}&all=true`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -61,13 +62,13 @@ export default function Game() {
                 return titlesList
             }
         } else { // if using autocomplete, just get all titles
-            let titlesReponse = await fetch('https://manga-guessr-server.herokuapp.com/titles')
+            let titlesReponse = await fetch('${url}/titles')
             let titlesList = await titlesReponse.json()
 
             // if using lists and autocomplete, add the titles of mdlists to all titles
             if (gameSettings.tagsOrLists) {
                 let listsParams = '?lists[]=' + gameSettings.lists.join('&lists[]=')
-                let mdlistTitlesResponse = await fetch(`https://manga-guessr-server.herokuapp.com/titles/lists${listsParams}`, {
+                let mdlistTitlesResponse = await fetch(`${url}/titles/lists${listsParams}&all=true`, {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -90,17 +91,6 @@ export default function Game() {
                     console.log('Error when getting mangas, resetting game')
                     resetGame()
                 } else {
-                    // generate rounds from mangas
-                    let roundNumber = 0
-                    let rounds = []
-                    for (let manga of mangas) {
-                        let round = {
-                            ref: manga.ref,
-                            chapterid: manga.chapterid
-                        }
-                        rounds.push(round)
-                        roundNumber += 1
-                    }
                     setMangas(mangas)
                     setTitles(titles)
                     setGameState(2)
@@ -116,8 +106,10 @@ export default function Game() {
 
     // check is both mangas and titles are loaded, if so start game
     useEffect(() => {
+        console.log(mangas)
+        console.log(titles)
         if (mangas.length !== 0 && titles.length !== 0 && gameState === 1) {
-            setGameState(3)
+            setGameState(2)
         }
     }, [mangas, titles])
 
