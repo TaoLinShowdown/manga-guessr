@@ -19,51 +19,49 @@ export default function Game() {
     })
     
     const getMangas = async (gameSettings) => {
+        let urlAndParams
         if (!gameSettings.tagsOrLists) {
-            let tagsParams = gameSettings.tags.length > 0 ? '&tags[]=' + gameSettings.tags.join('&tags[]=') : ''
-            let mangasResponse = await fetch(`${url}/manga/tags?totalRounds=${gameSettings.totalRounds}${tagsParams}`, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'}
-            })
-            let mangasData = await mangasResponse.json()
-            return mangasData.mangas
+            urlAndParams = `${url}/manga/tags?totalRounds=${gameSettings.totalRounds}${gameSettings.tags.length > 0 ? '&tags[]=' + gameSettings.tags.join('&tags[]=') : ''}`
         } else {
-            let listsParams = '&lists[]=' + gameSettings.lists.join('&lists[]=')
-            let mangasResponse = await fetch(`${url}/manga/lists?totalRounds=${gameSettings.totalRounds}${listsParams}`, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'},
-            })
-            let mangasData = await mangasResponse.json()
-            if (mangasData.result !== 'ok') {
-                return 'error'
-            } else {
-                return mangasData.mangas
-            }
+            urlAndParams = `${url}/manga/lists?totalRounds=${gameSettings.totalRounds}${'&lists[]=' + gameSettings.lists.join('&lists[]=')}`
+        }
+        let mangasResponse = await fetch(urlAndParams, {
+            method: 'GET',
+            headers: {'Content-Type': 'application/json'},
+        })
+        let mangasData = await mangasResponse.json()
+        if (mangasData.result !== 'ok') {
+            return 'error'
+        } else {
+            return mangasData.mangas
         }
     }
 
     const getTitles = async (gameSettings) => {
-        if (gameSettings.enableMultiChoice) { // however, if the tags are changed, we do want to get the titles again
-            if (!gameSettings.tagsOrLists) {  // if using tags, get titles based on tags
-                let tagsParams = gameSettings.tags.length > 0 ? '?tags[]=' + gameSettings.tags.join('&tags[]=') : ''
-                let titlesReponse = await fetch(`${url}/titles/tags${tagsParams}`, {
-                    method: 'GET',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                let titlesList = await titlesReponse.json()
-                return titlesList
-            } else { // if using lists, get titles based on manga in those lists
-                let listsParams = '?lists[]=' + gameSettings.lists.join('&lists[]=')
-                let titlesReponse = await fetch(`${url}/titles/lists${listsParams}&all=true`, {
-                    method: 'GET',
-                    headers: {'Content-Type': 'application/json'}
-                })
-                let titlesList = await titlesReponse.json()
-                return titlesList
+        if (gameSettings.enableMultiChoice) {
+            let urlAndParams
+            if (!gameSettings.tagsOrLists) {
+                urlAndParams = `${url}/titles/tags${gameSettings.tags.length > 0 ? '?tags[]=' + gameSettings.tags.join('&tags[]=') : ''}`
+            } else {
+                urlAndParams = `${url}/titles/lists${'?lists[]=' + gameSettings.lists.join('&lists[]=')}`
             }
-        } else { // if using autocomplete, just get all titles
-            let titlesReponse = await fetch('${url}/titles')
-            let titlesList = await titlesReponse.json()
+            let titlesReponse = await fetch(urlAndParams, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            })
+            let titlesData = await titlesReponse.json()
+            if (titlesData.result !== 'ok') {
+                return 'error'
+            } else {
+                return titlesData.titles
+            }
+        } else {
+            let titlesReponse = await fetch(`${url}/titles`)
+            let titlesData = await titlesReponse.json()
+            if (titlesData.result !== 'ok') {
+                return 'error'
+            }
+            let titlesList = titlesData.titles
 
             // if using lists and autocomplete, add the titles of mdlists to all titles
             if (gameSettings.tagsOrLists) {
@@ -72,7 +70,11 @@ export default function Game() {
                     method: 'GET',
                     headers: {'Content-Type': 'application/json'}
                 })
-                let mdlistTitles = await mdlistTitlesResponse.json()
+                let mdlistTitlesData = await mdlistTitlesResponse.json()
+                if (mdlistTitlesData.result !== 'ok') {
+                    return 'error'
+                }
+                let mdlistTitles = mdlistTitlesData.titles
                 for (let titleToAdd of mdlistTitles) {
                     if (!titlesList.includes(titleToAdd)) titlesList.push(titleToAdd)
                 }
@@ -87,13 +89,12 @@ export default function Game() {
         setDefaultGameSettings(gameSettings)
         Promise.all([getMangas(gameSettings), getTitles(gameSettings)])
             .then(([ mangas, titles ]) => {
-                if (mangas === 'error') {
-                    console.log('Error when getting mangas, resetting game')
+                if (mangas === 'error' || titles === 'error') {
+                    console.log('Error when getting mangas and titles, resetting game')
                     resetGame()
                 } else {
                     setMangas(mangas)
                     setTitles(titles)
-                    setGameState(2)
                 }
             })
     }
@@ -106,8 +107,6 @@ export default function Game() {
 
     // check is both mangas and titles are loaded, if so start game
     useEffect(() => {
-        console.log(mangas)
-        console.log(titles)
         if (mangas.length !== 0 && titles.length !== 0 && gameState === 1) {
             setGameState(2)
         }
