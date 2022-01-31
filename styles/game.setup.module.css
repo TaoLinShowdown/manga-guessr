@@ -11,7 +11,7 @@
     padding: 0 10px 9px 10px;
     border-radius: 0.25rem;
     margin-top: 20px;
-    width: 560px;
+    width: 600px;
 }
   
 .game-setup > section > h3 {
@@ -19,6 +19,15 @@
     margin-block-end: 0;
     width: 100%;
     border-bottom: 1px solid hsla(0,0%,50.2%,.5);
+}
+
+.game-setup > section > div:nth-child(4),
+.game-setup > section > div:nth-child(4) {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
 }
   
 .game-setup > section > button:last-child {
@@ -240,11 +249,11 @@
     outline: rgb(255, 103, 64) 1px solid !important;
 }
   
-@media only screen and (max-width: 1900px) {
+/* @media only screen and (max-width: 1900px) {
     .game-setup > section {
         width: 530px;
     }
-}
+} */
   
 @media only screen and (max-width: 550px) {
     .game-setup > section {

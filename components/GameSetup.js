@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '../styles/game.setup.module.css'
+import MultiRangeSlider from './MultiRangeSlider'
 
 export default function GameSetup({ defaultGameSettings, startGame }) {
     const tagsList = [
@@ -95,6 +96,28 @@ export default function GameSetup({ defaultGameSettings, startGame }) {
                         Multiple Choice
                         <input type='checkbox' checked={enableMultiChoice} onChange={() => setEnableMultiChoice(!enableMultiChoice)} />
                     </label>
+                </p>
+                <div>
+                    <MultiRangeSlider
+                        label={'Year'}
+                        min={1950}
+                        max={2022}
+                        step={1}
+                        onChange={() => {}}
+                    />
+                </div>
+                <div>
+                    <MultiRangeSlider
+                        label={'Rating'}
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        onChange={() => {}}
+                    />
+                </div>
+                <p>
+                    Minimum Follows
+                    <input type='number' min='0' />
                 </p>
                 <div className={styles['filter-header']}>
                     <div>
