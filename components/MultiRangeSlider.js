@@ -2,9 +2,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import styles from '../styles/multirangeslider.module.css';
 
-export default function MultiRangeSlider({ label, min, max, onChange, step }) {
-    const [minVal, setMinVal] = useState(min);
-    const [maxVal, setMaxVal] = useState(max);
+export default function MultiRangeSlider({ label, min, max, onChange, step, defaultMin, defaultMax }) {
+    const [minVal, setMinVal] = useState(defaultMin);
+    const [maxVal, setMaxVal] = useState(defaultMax);
     const minValRef = useRef(null);
     const maxValRef = useRef(null);
     const range = useRef(null);

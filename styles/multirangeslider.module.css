@@ -119,3 +119,7 @@
     position: relative;
 }
 
+.inputs input,
+.slider {
+    transform: translateY(2px);
+}

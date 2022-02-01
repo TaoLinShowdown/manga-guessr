@@ -43,7 +43,6 @@ export default function MultipleChoice({ titles, correctTitle, submit, disabled 
 
     return (
         <React.Fragment>
-            {/* {titles && titles.map(t => <div>{t}</div>)} */}
             <div className={styles['choices']}>
                 {choices.map(c => 
                     <div className={chosenOne === c ? styles['chosen'] : styles['unchosen']} key={c} onClick={() => setChosenOne(c)}>{c}</div>

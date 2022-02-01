@@ -5,23 +5,37 @@ import styles from '../styles/game.module.css'
 import GameSetup from '../components/GameSetup'
 import GameComponent from '../components/GameComponent'
 const url = 'https://manga-guessr-server-staging.herokuapp.com'
+// const url = 'http://localhost:5000'
 
 export default function Game() {
     let [ gameState, setGameState ] = useState(0) // 0:setup, 1:loading, 2:game
     let [ mangas, setMangas ] = useState([])
     let [ titles, setTitles ] = useState([])
-    let [ defaultGameSettings, setDefaultGameSettings ] = useState({
-        tags: [],
-        lists: [],
-        totalRounds: 10,
-        tagsOrLists: false,
-        enableMultiChoice: true
-    })
+    let [ defaultGameSettings, setDefaultGameSettings ] = useState(
+        typeof window !== 'undefined' && localStorage.getItem('settings') ? JSON.parse(localStorage.getItem('settings')) :
+        {
+            tags: [],
+            lists: [],
+            totalRounds: 10,
+            tagsOrLists: false,
+            enableMultiChoice: true,
+            minYear: 1980,
+            maxYear: 2022,
+            minRating: 0,
+            maxRating: 10,
+            minFollows: 0
+        }
+    )
     
     const getMangas = async (gameSettings) => {
         let urlAndParams
         if (!gameSettings.tagsOrLists) {
-            urlAndParams = `${url}/manga/tags?totalRounds=${gameSettings.totalRounds}${gameSettings.tags.length > 0 ? '&tags[]=' + gameSettings.tags.join('&tags[]=') : ''}`
+            urlAndParams = `${url}/manga/tags?totalRounds=${gameSettings.totalRounds}`
+            urlAndParams += `${gameSettings.tags.length > 0 ? '&tags[]=' + gameSettings.tags.join('&tags[]=') : ''}`
+            urlAndParams += `&minYear=${gameSettings.minYear === 1980 ? 0 : gameSettings.minYear}&maxYear=${gameSettings.maxYear}`
+            urlAndParams += `&minRating=${gameSettings.minRating}&maxRating=${gameSettings.maxRating}`
+            urlAndParams += `&minFollows=${gameSettings.minFollows}`
+            
         } else {
             urlAndParams = `${url}/manga/lists?totalRounds=${gameSettings.totalRounds}${'&lists[]=' + gameSettings.lists.join('&lists[]=')}`
         }
@@ -89,14 +103,18 @@ export default function Game() {
         setDefaultGameSettings(gameSettings)
         Promise.all([getMangas(gameSettings), getTitles(gameSettings)])
             .then(([ mangas, titles ]) => {
-                if (mangas === 'error' || titles === 'error') {
-                    console.log('Error when getting mangas and titles, resetting game')
+                if (mangas === 'error' || titles === 'error' || mangas.length < 5 || titles.length < 5) {
+                    console.debug('Error when getting mangas and titles, resetting game')
                     resetGame()
                 } else {
                     setMangas(mangas)
                     setTitles(titles)
                 }
             })
+    }
+
+    const saveToLocalStorage = (gameSettings) => {
+        localStorage.setItem('settings', JSON.stringify(gameSettings))
     }
 
     const resetGame = () => {
@@ -125,7 +143,8 @@ export default function Game() {
             {gameState === 0 ? 
                 <GameSetup 
                     defaultGameSettings={defaultGameSettings}
-                    startGame={startGame} 
+                    startGame={startGame}
+                    saveToLocalStorage={saveToLocalStorage}
                 />
             : gameState === 1 ?
                 <div className={styles['loading']}>
