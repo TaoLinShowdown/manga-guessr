@@ -12,7 +12,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import AutoSearchBar from '../components/AutoSearchBar'
 import MultipleChoice from '../components/MultipleChoice'
+// const url = 'https://manga-guessr-server.herokuapp.com'
 const url = 'https://manga-guessr-server-staging.herokuapp.com'
+// const url = 'http://localhost:5000'
 
 export default function GameComponent({ mangas, titles, multipleChoice, resetGame }) {
     let [ currentRound, setCurrentRound ] = useState(0)
@@ -38,14 +40,31 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
         }
     }
 
-    const onSubmit = (myguess) => {
+    const onSubmit = async (myguess) => {
+        let correct = false
         if (myguess === '') {
             setResults([ ...results, 0 ])
         } else if (mangas[currentRound].titles.includes(myguess)) {
             setScore(score + 1)
             setResults([ ...results, 1 ])
+            correct = true
         } else {
             setResults([ ...results, -1 ])
+        }
+        try {
+            await fetch(`${url}/manga/score`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id': mangas[currentRound].id,
+                    'correct': correct
+                })
+            })
+        } catch(e) {
+            console.error('error on submitting score')
+            console.error('e')
         }
 
         setTimeout(() => {
