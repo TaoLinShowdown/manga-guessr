@@ -12,9 +12,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import AutoSearchBar from '../components/AutoSearchBar'
 import MultipleChoice from '../components/MultipleChoice'
-// const url = 'https://manga-guessr-server.herokuapp.com'
-const url = 'https://manga-guessr-server-staging.herokuapp.com'
-// const url = 'http://localhost:5000'
+const url = 'https://manga-guessr-server.herokuapp.com'
 
 export default function GameComponent({ mangas, titles, multipleChoice, resetGame }) {
     let [ currentRound, setCurrentRound ] = useState(0)

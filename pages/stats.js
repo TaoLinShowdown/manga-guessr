@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import styles from '../styles/stats.module.css'
 
-const url = 'https://manga-guessr-server-staging.herokuapp.com'
+const url = 'https://manga-guessr-server.herokuapp.com'
 
 export default function Stats() {
     const [ stats, setStats ] = useState([])

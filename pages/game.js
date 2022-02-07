@@ -4,8 +4,7 @@ import Image from 'next/image'
 import styles from '../styles/game.module.css'
 import GameSetup from '../components/GameSetup'
 import GameComponent from '../components/GameComponent'
-const url = 'https://manga-guessr-server-staging.herokuapp.com'
-// const url = 'http://localhost:5000'
+const url = 'https://manga-guessr-server.herokuapp.com'
 
 export default function Game() {
     let [ gameState, setGameState ] = useState(0) // 0:setup, 1:loading, 2:game
