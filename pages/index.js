@@ -19,12 +19,15 @@ export default function Home() {
                 <Image 
                     src='/mangaquizlogo_light.svg' 
                     alt='Logo goes here'
-                    width={300}
-                    height={300}
+                    width={200}
+                    height={200}
                 />
-                <header><h1>MangaGuessr</h1></header>
+                <header><h2>MangaGuessr</h2></header>
                 <Link href='/game'>
                     <div className={styles['button']}>Play</div>
+                </Link>
+                <Link href='/stats'>
+                    <div className={styles['button']}>Statistics</div>
                 </Link>
                 <Link href='/about'>
                     <div className={styles['button']}>About</div>

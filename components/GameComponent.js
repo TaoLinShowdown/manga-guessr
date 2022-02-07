@@ -12,6 +12,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import AutoSearchBar from '../components/AutoSearchBar'
 import MultipleChoice from '../components/MultipleChoice'
+const url = 'https://manga-guessr-server.herokuapp.com'
 
 export default function GameComponent({ mangas, titles, multipleChoice, resetGame }) {
     let [ currentRound, setCurrentRound ] = useState(0)
@@ -21,7 +22,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
     let [ score, setScore ] = useState(0)
 
     const getPageLink = async (chapterid) => {
-        let athomeUrlResponse = await fetch(`https://manga-guessr-server.herokuapp.com/pagelink?chapterId=${chapterid}`)
+        let athomeUrlResponse = await fetch(`${url}/manga/pagelink?chapterId=${chapterid}`)
         let athomeUrlData = await athomeUrlResponse.json()
 
         // in case of being ratelimited
@@ -29,7 +30,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
             let retry = athomeUrlData.retry
             console.log(`RATE LIMITED WAITING ${retry + 5} SECONDS`)
             await new Promise(resolve => setTimeout(resolve, (retry * 1000) + 5000)) // sleep
-            athomeUrlResponse = await fetch(`https://manga-guessr-server.herokuapp.com/pagelink?chapterId=${chapterid}`)
+            athomeUrlResponse = await fetch(`${url}/manga/pagelink?chapterId=${chapterid}`)
             athomeUrlData = await athomeUrlResponse.json()
             return athomeUrlData.page
         } else {
@@ -37,14 +38,31 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
         }
     }
 
-    const onSubmit = (myguess) => {
+    const onSubmit = async (myguess) => {
+        let correct = false
         if (myguess === '') {
             setResults([ ...results, 0 ])
         } else if (mangas[currentRound].titles.includes(myguess)) {
             setScore(score + 1)
             setResults([ ...results, 1 ])
+            correct = true
         } else {
             setResults([ ...results, -1 ])
+        }
+        try {
+            await fetch(`${url}/manga/score`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'id': mangas[currentRound].id,
+                    'correct': correct
+                })
+            })
+        } catch(e) {
+            console.error('error on submitting score')
+            console.error('e')
         }
 
         setTimeout(() => {
@@ -55,7 +73,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
     useEffect(async () => {
         // console.log(`Current Round: ${currentRound}`)
         if (currentRound < mangas.length && mangas[currentRound].pagelink === undefined) {
-            let pagelink = await getPageLink(mangas[currentRound].chapterid)
+            let pagelink = await getPageLink(mangas[currentRound].chapterId)
             setPageLinks([ ...pageLinks, pagelink ])
             setGuessingState(0)
         }
@@ -86,7 +104,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
                             } 
                             <div className={styles['manga-page-modal-title']}>{mangas[currentRound].titles[0]}</div>
                             <div className={styles['icon-holder']}>
-                                <a href={`https://mangadex.org/title/${mangas[currentRound].ref}`} target="_blank" rel="noopener noreferrer">
+                                <a href={`https://mangadex.org/title/${mangas[currentRound].id}`} target="_blank" rel="noopener noreferrer">
                                     Read here 
                                     <svg data-v-20f285ec="" data-v-e3b182be="" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" ><path data-v-20f285ec="" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
                                 </a>
@@ -139,7 +157,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
                             {mangas.filter((m, index) => index < currentRound).map((m, index, mangas) =>
                                 <PreviewCard
                                     key={index}
-                                    mangaRef={mangas[mangas.length - 1 - index].ref}
+                                    mangaRef={mangas[mangas.length - 1 - index].id}
                                     title={`${mangas.length - index}. ${mangas[mangas.length - 1 - index].titles[0]}`}
                                     pageLink={pageLinks[mangas.length - index - 1]}
                                 />
@@ -170,7 +188,7 @@ export default function GameComponent({ mangas, titles, multipleChoice, resetGam
                     {mangas && mangas.map((m, index) => 
                         <PreviewCard 
                             key={index}
-                            mangaRef={m.ref}
+                            mangaRef={m.id}
                             title={m.titles[0]}
                             pageLink={pageLinks[index]}
                         />

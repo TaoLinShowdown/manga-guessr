@@ -11,7 +11,7 @@
     padding: 0 10px 9px 10px;
     border-radius: 0.25rem;
     margin-top: 20px;
-    width: 560px;
+    width: 600px;
 }
   
 .game-setup > section > h3 {
@@ -21,19 +21,21 @@
     border-bottom: 1px solid hsla(0,0%,50.2%,.5);
 }
   
-.game-setup > section > button:last-child {
+.game-setup > section > div:last-child {
     float: right;
     margin-top: 10px;
 }
   
-.game-setup > section > button:last-child:disabled {
+.game-setup > section > div:last-child > button:last-child:disabled,
+.game-setup > section > div:last-child > button:last-child:disabled:hover {
     cursor: initial;
+    background-color: #4f4f4f;
     opacity: 0.2;
 }
   
-.game-setup > section > button:last-child:disabled:hover {
-    cursor: initial;
-    background-color: #4f4f4f;
+.game-setup > section > div:last-child > button:last-child:hover {
+    cursor: pointer;
+    background-color: rgb(255, 103, 64);
 }
 
 .filter-header {
@@ -129,6 +131,27 @@
 .multichoice input[type="checkbox"]:checked::before {
     transform: scale(1.2);
 }
+
+.slider {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+.follows input {
+    font: inherit;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    padding: 2px 0.3rem 0px 0.3rem;
+    margin: 0 0.5rem;
+    outline: rgb(255, 103, 64, 0) 1px solid;
+    transition: all .2s ease-out;
+    width: 100px;
+    background-color: #4f4f4f;
+}
   
 .tagslist-tags > *, .tagslist-deselected {
     color: white;
@@ -213,10 +236,6 @@
     border: none;
 }
   
-.game-setup button:hover {
-    background-color: #3f3f3f;
-}
-  
 .game-setup button:active {
     background-color: #383838;
 }
@@ -236,18 +255,19 @@
     transition: all .2s ease-out;
 }
   
-.total-rounds:focus, .add-list input:focus {
+.total-rounds:focus, 
+.add-list input:focus,
+.follows input:focus {
     outline: rgb(255, 103, 64) 1px solid !important;
-}
-  
-@media only screen and (max-width: 1900px) {
-    .game-setup > section {
-        width: 530px;
-    }
 }
   
 @media only screen and (max-width: 550px) {
     .game-setup > section {
         width: 95%;
+    }
+
+    .slider,
+    .follows {
+        display: none;
     }
 }

@@ -2,8 +2,9 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from '../styles/game.setup.module.css'
+import MultiRangeSlider from './MultiRangeSlider'
 
-export default function GameSetup({ defaultGameSettings, startGame }) {
+export default function GameSetup({ defaultGameSettings, startGame, saveToLocalStorage }) {
     const tagsList = [
         'Shounen',       'Shoujo',        'Seinen',
         'Josei',         'Action',        'Adventure',
@@ -28,12 +29,17 @@ export default function GameSetup({ defaultGameSettings, startGame }) {
         'Zombies'
     ]
 
-    let [ mdListInput, setMDListInput ] = useState('')
-    let [ tags, setTags ] = useState(defaultGameSettings.tags)
-    let [ lists, setLists ] = useState(defaultGameSettings.lists)
     let [ totalRounds, setTotalRounds ] = useState(defaultGameSettings.totalRounds)
-    let [ tagsOrLists, setTagsOrLists ] = useState(defaultGameSettings.tagsOrLists) // false: tags, true: lists
     let [ enableMultiChoice, setEnableMultiChoice ] = useState(defaultGameSettings.enableMultiChoice)
+    let [ minYear, setMinYear ] = useState(defaultGameSettings.minYear)
+    let [ maxYear, setMaxYear ] = useState(defaultGameSettings.maxYear)
+    let [ minRating, setMinRating ] = useState(defaultGameSettings.minRating)
+    let [ maxRating, setMaxRating ] = useState(defaultGameSettings.maxRating)
+    let [ minFollows, setMinFollows ] = useState(defaultGameSettings.minFollows)
+    let [ tagsOrLists, setTagsOrLists ] = useState(defaultGameSettings.tagsOrLists) // false: tags, true: lists
+    let [ tags, setTags ] = useState(defaultGameSettings.tags)
+    let [ mdListInput, setMDListInput ] = useState('')
+    let [ lists, setLists ] = useState(defaultGameSettings.lists)
 
     const handleTagListSelect = (tag) => {
         if (tags.includes(tag)) {
@@ -96,6 +102,42 @@ export default function GameSetup({ defaultGameSettings, startGame }) {
                         <input type='checkbox' checked={enableMultiChoice} onChange={() => setEnableMultiChoice(!enableMultiChoice)} />
                     </label>
                 </p>
+                {!tagsOrLists ?
+                    <>
+                        <div className={styles['slider']}>
+                            <MultiRangeSlider
+                                label={'Year'}
+                                min={1980}
+                                max={2022}
+                                defaultMin={defaultGameSettings.minYear}
+                                defaultMax={defaultGameSettings.maxYear}
+                                step={1}
+                                onChange={(e) => {
+                                    setMinYear(e.min === 1950 ? 0 : e.min);
+                                    setMaxYear(e.max);
+                                }}
+                            />
+                        </div>
+                        <div className={styles['slider']}>
+                            <MultiRangeSlider
+                                label={'Rating'}
+                                min={0}
+                                max={10}
+                                defaultMin={defaultGameSettings.minRating}
+                                defaultMax={defaultGameSettings.maxRating}
+                                step={0.1}
+                                onChange={(e) => {
+                                    setMinRating(e.min);
+                                    setMaxRating(e.max);
+                                }}
+                            />
+                        </div>
+                        <p className={styles['follows']}>
+                            Minimum Follows
+                            <input type='number' min='0' value={`${minFollows}`} onChange={(e) => setMinFollows(e.target.value)} />
+                        </p>
+                    </> : <></>
+                }
                 <div className={styles['filter-header']}>
                     <div>
                         <span className={!tagsOrLists ? styles['filter-enabled'] : styles['filter-disabled']}>Tags</span>
@@ -140,7 +182,29 @@ export default function GameSetup({ defaultGameSettings, startGame }) {
                         </div>
                     </div>
                 }
-                <button disabled={tagsOrLists && lists.length === 0} onClick={() => startGame({tags, lists, totalRounds, tagsOrLists, enableMultiChoice})}>Start</button>
+                <div>
+                    <button 
+                        onClick={() => saveToLocalStorage({
+                            tags, 
+                            lists, 
+                            totalRounds, 
+                            tagsOrLists, 
+                            enableMultiChoice, 
+                            minYear, maxYear, 
+                            minRating, maxRating, 
+                            minFollows})}>Save</button>
+                    <button 
+                        disabled={tagsOrLists && lists.length === 0} 
+                        onClick={() => startGame({
+                            tags, 
+                            lists, 
+                            totalRounds, 
+                            tagsOrLists, 
+                            enableMultiChoice, 
+                            minYear, maxYear, 
+                            minRating, maxRating, 
+                            minFollows})}>Start</button>
+                </div>
             </section>
         </div>
     )
