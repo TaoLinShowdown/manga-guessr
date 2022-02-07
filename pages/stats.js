@@ -6,7 +6,7 @@ import styles from '../styles/stats.module.css'
 
 const url = 'https://manga-guessr-server-staging.herokuapp.com'
 
-export default function stats() {
+export default function Stats() {
     const [ stats, setStats ] = useState([])
     const [ loading, setLoading ] = useState(true)
 
@@ -94,7 +94,7 @@ export default function stats() {
                     </>
                 :   
                     <div className={styles['section']}>
-                        <h3>Stats aren't ready yet!</h3>
+                        <h3>Stats aren&quot;t ready yet!</h3>
                         <p>Come back when more games have been played</p>
                     </div>
                 }
@@ -107,7 +107,7 @@ function Card({ manga }) {
     return (
         <div className={styles['card']}>
             <a href={`https://mangadex.org/title/${manga.id}`} target="_blank" rel="noopener noreferrer">
-                <img src={manga.cover}/>
+                <img src={manga.cover} alt='cover art'/>
             </a>
             <a href={`https://mangadex.org/title/${manga.id}`} target="_blank" rel="noopener noreferrer" className={styles['title']}>{manga.title}</a>
             <div>{manga.total_plays} times played</div>
