@@ -39,4 +39,9 @@ Manga Guessr also stores statistics for the most played, most correct, and least
 ## Server
 
 Backend is built with Express and PostgreSQL hosted on Heroku  
-Code can be found [here](https://github.com/TaoLinShowdown/manga-guessr-server)  
+Code can be found [here](https://github.com/TaoLinShowdown/manga-guessr-server)
+
+## Plans in the Future
+
+- Multiplayer
+- Hardmode (guessing from a small portion of a page)
