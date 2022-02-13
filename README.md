@@ -2,12 +2,12 @@
     <a href="https://github.com/TaoLinShowdown/aniMinder">
         <img src="public/mangaquizlogo_light.svg" alt="logo" width="128" height="128">
     </a>
-    <h3 align="center">Manga Guessr</h3>
+    <h3 align="center">MangaGuessr</h3>
 </p>
 
 ## About
 
-Manga Guessr is a manga quiz game built with NextJS.  
+MangaGuessr is a manga quiz game built with NextJS.  
 All manga data (titles, covers, pages, tags, etc.) are taken from the MangaDex API.  
 Play here: [mangaguessr.com](https://mangaguessr.com)
 
@@ -15,7 +15,7 @@ Play here: [mangaguessr.com](https://mangaguessr.com)
 
 ### Multiple Choice/Autocomplete
 
-Manga Guessr supports both multiple choice and autocomplete for a more difficult experience.  
+MangaGuessr supports both multiple choice and autocomplete for a more difficult experience.  
 When using multiple choice and filtering by tags, suggested titles will be relevant to the tags chosen.
 
 ### Tags
@@ -26,7 +26,7 @@ Some issues can arise when filter settings are too restrictive, sometimes result
 
 ### MDLists
 
-The second option to generate mangas is by providing one or more MDLists. MDLists are lists created on MangaDex [here](https://mangadex.org/my/lists). Players can put whatever manga they want here. Since Manga Guessr only stores Japanese manga in its database, this could be useful if a game with manhua or donghua is desired. 
+The second option to generate mangas is by providing one or more MDLists. MDLists are lists created on MangaDex [here](https://mangadex.org/my/lists). Players can put whatever manga they want here. Since MangaGuessr only stores Japanese manga in its database, this could be useful if a game with manhua or donghua is desired. 
 
 ### Saving Settings
 
@@ -34,7 +34,7 @@ Filter settings can be saved through the browser's localstorage for ease of use.
 
 ### Statistics
 
-Manga Guessr also stores statistics for the most played, most correct, and least correct mangas. As more games are played more interesting results can be seen.
+MangaGuessr also stores statistics for the most played, most correct, and least correct mangas. As more games are played more interesting results can be seen.
 
 ## Server
 
